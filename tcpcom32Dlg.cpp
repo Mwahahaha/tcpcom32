@@ -32,9 +32,13 @@ CTcpcom32Dlg::CTcpcom32Dlg(CWnd* pParent /*=NULL*/)
 	// Note that LoadIcon does not require a subsequent DestroyIcon in Win32
 	m_hIcon = AfxGetApp()->LoadIcon(IDI_ICON_PORT);
 	m_hIconErr = AfxGetApp()->LoadIcon(IDI_ICON_PORT_ERROR);
-	m_hMainEvent = NULL;
-	m_hMainThread = NULL;
-	m_dwMainThreadId = 0;
+   for (int ii = 00; ii < MX_COM_PORT; ii++)
+      {
+      m_hEvent[ii] = NULL;
+      m_hThread[ii] = NULL;
+      m_dwThreadId[ii] = 0;
+      m_ctx[ii] = NULL;
+      }
 	m_isInitialized = FALSE;
 	m_dwCmdShow = SW_HIDE;
 }
@@ -58,12 +62,6 @@ BEGIN_MESSAGE_MAP(CTcpcom32Dlg, CDialog)
 	ON_MESSAGE(WM_ICON_NOTIFY, OnTrayNotification)
 	ON_MESSAGE(WM_SYSCOMMAND, OnSysCommand)
 	ON_COMMAND(ID_SYSTEM_RESTART, OnSystemRestart)
-	ON_COMMAND(ID_SYSTEM_SETTINGS, OnSystemSettings)
-	ON_COMMAND(ID_PORT_CLOSE, OnPortClose)
-	ON_COMMAND(ID_PORT_SETTINGS, OnPortSettings)
-	ON_COMMAND(ID_PORT_CONNECTION, OnPortConnection)
-	ON_COMMAND(ID_PORT_ENABLE, OnPortEnable)
-	ON_COMMAND(ID_PORT_DISABLE, OnPortDisable)
 	ON_NOTIFY(NM_RCLICK, IDC_TREEVIEW, OnRclickTreeview)
 	ON_NOTIFY(NM_DBLCLK, IDC_TREEVIEW, OnDblclkTreeview)
 	ON_NOTIFY(TVN_SELCHANGED, IDC_TREEVIEW, OnSelchangedTreeview)
@@ -244,102 +242,10 @@ LRESULT CTcpcom32Dlg::OnSysCommand(WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-void CTcpcom32Dlg::OnSystemSettings() 
-{
-	int nResponse = theSettingsDlg.DoModal();
-	if (nResponse == IDOK) {
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with OK	
-	} else if (nResponse == IDCANCEL) {
-		// TODO: Place code here to handle when the dialog is
-		//  dismissed with Cancel
-	}
-}
-
 void CTcpcom32Dlg::OnSystemRestart() 
 {
 	// Start initialize thread
 	StartThread(InitializeThreadProc, (LPVOID)this, NULL, NULL, NULL);
-}
-
-void CTcpcom32Dlg::OnPortEnable() 
-{
-	HTREEITEM hti = m_treeview.GetSelectedItem();
-	if (hti) {
-		theSettingsDlg.SetPortDisabled(m_treeview.GetItemText(hti).GetBuffer(0), FALSE);
-		m_treeview.SetItemImage(hti, BMP_PORT_CLOSED, BMP_PORT_CLOSED);
-	}
-	UpdateData(FALSE);
-}
-
-void CTcpcom32Dlg::OnPortDisable() 
-{
-	HTREEITEM hti = m_treeview.GetSelectedItem();
-	if (hti) {
-		CPortContext *lpContext = (CPortContext *)m_treeview.GetItemData(hti);
-		if (lpContext) {
-			lpContext->isDisabled = TRUE;
-			if (lpContext->lpSocket) {
-				LPHANDLE lpArgs = new HANDLE[2];
-				lpArgs[0] = lpContext->hEvent;
-				lpArgs[1] = lpContext->hThread;
-				StartThread(StopThreadProc, lpArgs, NULL, NULL, NULL);
-			}
-			theSettingsDlg.SetPortDisabled(lpContext->szPortName, TRUE);
-		} else {
-			theSettingsDlg.SetPortDisabled(m_treeview.GetItemText(hti).GetBuffer(0), TRUE);
-		}
-		m_treeview.SetItemImage(hti, BMP_PORT_DISABLED, BMP_PORT_DISABLED);
-	}
-	UpdateData(FALSE);
-}
-
-void CTcpcom32Dlg::OnPortClose() 
-{
-	HTREEITEM hti = m_treeview.GetSelectedItem();
-	//HTREEITEM hti = m_treeview.GetNextItem(TVI_ROOT, TVGN_CARET);
-	if (hti) {
-		CPortContext *lpContext = (CPortContext *)m_treeview.GetItemData(hti);
-		if (lpContext) {
-			LPHANDLE lpArgs = new HANDLE[2];
-			lpArgs[0] = lpContext->hEvent;
-			lpArgs[1] = lpContext->hThread;
-			StartThread(StopThreadProc, lpArgs, NULL, NULL, NULL);
-		}
-	}
-}
-
-void CTcpcom32Dlg::OnPortSettings() 
-{
-	HTREEITEM hti = m_treeview.GetSelectedItem();
-	if (hti) {
-		CPortContext *lpContext = (CPortContext *)m_treeview.GetItemData(hti);
-		if (lpContext) {
-			char buf[32];
-			lpContext->lpPort->ShowConfigDialog(GetSafeHwnd());
-			lpContext->lpPort->GetCommState(lpContext->lpDcb);
-			theSettingsDlg.SetPortConfig(lpContext->szPortName, lpContext->lpDcb);
-			if (hti = m_treeview.GetNextItem(lpContext->htiPort, TVGN_CHILD)) {
-				m_treeview.SetItemText(hti, TEXT( CAsyncPort::FormatDcb(lpContext->lpDcb, buf, 32) ));
-				UpdateData(FALSE);
-			}
-		}
-	}
-}
-
-void CTcpcom32Dlg::OnPortConnection() 
-{
-	HTREEITEM hti = m_treeview.GetSelectedItem();
-	if (hti) {
-		CPortContext *lpContext = (CPortContext *)m_treeview.GetItemData(hti);
-		if (lpContext) {
-			CTcpIpDlg dlg;
-			dlg.SetRequest(lpContext->lpszRequest);
-			dlg.SetResponse(lpContext->lpszResponse);
-			dlg.DoModal();
-		}
-	}
-
 }
 
 LRESULT CTcpcom32Dlg::OnTrayNotification(WPARAM wParam, LPARAM lParam) 
@@ -397,13 +303,12 @@ LRESULT CTcpcom32Dlg::OnThreadNotification(WPARAM wParam, LPARAM lParam)
 				lpContext->htiSerial = m_treeview.InsertItem(TEXT( CAsyncPort::FormatDcb(lpContext->lpDcb, buf, 64) ), 
 					BMP_RS232_INFO, BMP_RS232_INFO, lpContext->htiPort);
 				m_treeview.SetItemData(lpContext->htiSerial, (unsigned long)lpContext);
-				lpContext->htiSocket = m_treeview.InsertItem(TEXT( lpContext->lpSocket->GetPeerName(buf, 64) ), 
-					BMP_TCP_INFO, BMP_TCP_INFO, lpContext->htiPort);
-				m_treeview.SetItemData(lpContext->htiSocket, (unsigned long)lpContext);
+				//lpContext->htiSocket = m_treeview.InsertItem(TEXT("nom"/* lpContext->lpSocket->GetPeerName(buf, 64)*/), 
+				//	BMP_TCP_INFO, BMP_TCP_INFO, lpContext->htiPort);
+				//m_treeview.SetItemData(lpContext->htiSocket, (unsigned long)lpContext);
 				lpContext->htiStats = m_treeview.InsertItem(TEXT( "in=0 out=0" ), 
 					BMP_STATS, BMP_STATS, lpContext->htiPort);
 				m_treeview.SetItemData(lpContext->htiStats, (unsigned long)lpContext);
-				//m_treeview.Expand(lpContext->hti, TVE_EXPAND);
 				UpdateData(FALSE);
 				break;
 			}
@@ -453,7 +358,7 @@ LRESULT CTcpcom32Dlg::OnThreadNotification(WPARAM wParam, LPARAM lParam)
 					} else if (run[len-1] != '.') {
 						strcat(run, "...");
 					}
-				} else if (theSettingsDlg.IsPortDisabled(buf+1)) {
+				} else if (theSettingsDlg.IsComConfigured(buf+1)) {
 					if ((len = strlen(dis)) < sizeof(dis) - 6) {
 						strcat(dis, buf);
 					} else if (dis[len-1] != '.') {
@@ -492,11 +397,12 @@ void CTcpcom32Dlg::OnDblclkTreeview(NMHDR* pNMHDR, LRESULT* pResult)
 	if (hti) {
 		CPortContext *lpContext = (CPortContext *)m_treeview.GetItemData(hti);
 		if (lpContext) {
-			if (hti == lpContext->htiSerial) {
-				OnPortSettings();
-			} else if (hti == lpContext->htiSocket) {
-				OnPortConnection();
-			}
+			if (hti == lpContext->htiSerial) 
+            {
+			   } 
+         else if (hti == lpContext->htiSocket) 
+            {
+			   }
 		}
 	}
 
@@ -570,20 +476,20 @@ void CTcpcom32Dlg::UpdateMenu(LPSTR lpszPortName, CPortContext *lpContext)
 			lpMenuPort->EnableMenuItem(ID_PORT_ENABLE, MF_ENABLED);
 			lpMenuPort->EnableMenuItem(ID_PORT_DISABLE, MF_DISABLED|MF_GRAYED);
 		} else { // enabled
-			if (lpContext->lpSocket) { // open
+			/*if (lpContext->lpSocket) { // open
 				lpMenuPort->EnableMenuItem(ID_PORT_CLOSE, MF_ENABLED);
 				lpMenuPort->EnableMenuItem(ID_PORT_SETTINGS, MF_ENABLED);
 				lpMenuPort->EnableMenuItem(ID_PORT_CONNECTION, MF_ENABLED);
-			} else { // closed
+			} else { // closed*/
 				lpMenuPort->EnableMenuItem(ID_PORT_CLOSE, MF_DISABLED|MF_GRAYED);
 				lpMenuPort->EnableMenuItem(ID_PORT_SETTINGS, MF_DISABLED|MF_GRAYED);
 				lpMenuPort->EnableMenuItem(ID_PORT_CONNECTION, MF_DISABLED|MF_GRAYED);
-			}
+			//}
 			lpMenuPort->EnableMenuItem(ID_PORT_ENABLE, MF_DISABLED|MF_GRAYED);
 			lpMenuPort->EnableMenuItem(ID_PORT_DISABLE, MF_ENABLED);
 		}
 	} else if (lpszPortName) {
-		if (theSettingsDlg.IsPortDisabled(lpszPortName)) { // disabled
+		if (theSettingsDlg.IsComConfigured(lpszPortName)) { // disabled
 			lpMenuPort->EnableMenuItem(ID_PORT_CLOSE, MF_DISABLED|MF_GRAYED);
 			lpMenuPort->EnableMenuItem(ID_PORT_SETTINGS, MF_DISABLED|MF_GRAYED);
 			lpMenuPort->EnableMenuItem(ID_PORT_CONNECTION, MF_DISABLED|MF_GRAYED);

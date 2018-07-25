@@ -3,6 +3,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "AsyncPort.h"
+#include <iostream>
+#include <chrono>
+#include <ctime>
 
 //////////////////////////////////////////////////////////////////////
 // Friend Functions
@@ -28,8 +31,7 @@ CAsyncPort::CAsyncPort()
 	// init instance variables
 
 	memset(m_szCommDevName, 0, sizeof (m_szCommDevName));
-	memset(m_szInLogPath, 0, sizeof (m_szCommDevName));
-	memset(m_szOutLogPath, 0, sizeof (m_szCommDevName));
+	memset(m_szLogDir, 0, sizeof (m_szCommDevName));
 	m_hCommDev = INVALID_HANDLE_VALUE;
 	memset(& m_commConfig, 0, sizeof (COMMCONFIG));;
 	m_commConfig.dwSize = sizeof (COMMCONFIG);
@@ -43,7 +45,13 @@ CAsyncPort::CAsyncPort()
 	memset(m_baInBuf, 0, sizeof (m_baInBuf));
 	m_nInBufIndex = 0;
 	m_nInBufSize = 0;
+   m_szInBuffLen = 0;
+   m_szOutBuffLen = 0;
 	wsprintf(m_szMutexName, "CAsyncPort%08x", GetCurrentThreadId());
+
+   QueryPerformanceFrequency(&m_Freq);
+   QueryPerformanceCounter(&m_InSaveTime);
+   QueryPerformanceCounter(&m_OutSaveTime);
 
 	// create I/O event used for overlapped reads / writes
 
@@ -281,6 +289,8 @@ int CAsyncPort::CloseConnection()
 		PURGE_TXABORT | PURGE_RXABORT | PURGE_TXCLEAR | PURGE_RXCLEAR
 	);
 
+   SaveLog(false);
+
 	// close device
 	CloseHandle(m_hCommDev);
 
@@ -294,6 +304,8 @@ int CAsyncPort::CloseConnection()
 	memset(m_baInBuf, 0, sizeof (m_baInBuf));
 	m_nInBufIndex = 0;
 	m_nInBufSize = 0;
+   m_szInBuffLen = 0;
+   m_szOutBuffLen = 0;
 
 	return (0);
 }
@@ -337,7 +349,6 @@ BOOL CAsyncPort::IsConnected()
 {
     return (m_isConnected);
 }
-
 
 //////////////////////////////////////////////////////////////////////
 // ParseSetupString
@@ -543,23 +554,18 @@ int CAsyncPort::WatchCommDev()
                         break;
                     }
 
-					if (*m_szInLogPath) {
-						HANDLE hFile = CreateFile (
-							m_szInLogPath,
-							GENERIC_WRITE,
-							0,
-							(LPSECURITY_ATTRIBUTES) NULL,
-							OPEN_ALWAYS,
-							FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,
-							NULL
-						);
-						if (INVALID_HANDLE_VALUE != hFile) {
-							DWORD dwBytes;
-							SetFilePointer(hFile, 0, NULL, FILE_END);
-							WriteFile(hFile, baTmpInBuf, nLength, & dwBytes, NULL);
-							CloseHandle(hFile);
-						}
-					}
+					if (*m_szLogDir) 
+                  {
+
+                  QueryPerformanceCounter(&m_InSaveTime);
+
+                  // copie buffer
+                  if (m_szInBuffLen + nLength < _countof(m_szBufferIn))
+                     {
+                     memcpy(&m_szBufferIn[m_szInBuffLen], baTmpInBuf, nLength);
+                     m_szInBuffLen += nLength;
+                     }
+					   }
 
 					int nBytes =
 						nLength + m_nInBufSize > IN_BUFFER_SIZE ?
@@ -580,7 +586,7 @@ int CAsyncPort::WatchCommDev()
 					CloseHandle(hMutex);
 				}
 			}
-			while (nLength > 0) ;
+			while (nLength > 0);
 		}
 	}
 
@@ -594,6 +600,115 @@ int CAsyncPort::WatchCommDev()
 	m_hWatchThread = NULL;
 
 	return(0);
+}
+
+//////////////////////////////////////////////////////////////////////
+// WriteLogIn
+// return:   TRUE   success
+//           FALSE  error
+//
+BOOL CAsyncPort::WriteLogIn()
+{
+char FileName[MAX_PATH];
+SYSTEMTIME DateTime;      // Heure et date courante
+
+GetLocalTime(&DateTime);
+wsprintf(FileName, "%s/%4d%02d%02d_%s_OUT.log", 
+                   m_szLogDir,
+                   DateTime.wYear,
+                   DateTime.wMonth,
+                   DateTime.wDay,
+                   &m_szCommDevName[4]);
+return WriteLog(FileName, m_szBufferIn, m_szInBuffLen);
+}
+
+//////////////////////////////////////////////////////////////////////
+// WriteLogOut
+// return:   TRUE   success
+//           FALSE  error
+//
+BOOL CAsyncPort::WriteLogOut()
+{
+char FileName[MAX_PATH];
+SYSTEMTIME DateTime;      // Heure et date courante
+
+GetLocalTime(&DateTime);
+wsprintf(FileName, "%s/%4d%02d%02d_%s_IN.log",
+   m_szLogDir,
+   DateTime.wYear,
+   DateTime.wMonth,
+   DateTime.wDay,
+   &m_szCommDevName[4]);
+return WriteLog(FileName, m_szBufferOut, m_szOutBuffLen);
+}
+
+//////////////////////////////////////////////////////////////////////
+// WriteLog
+// return:   TRUE   success
+//           FALSE  error
+//
+BOOL CAsyncPort::WriteLog(const char* FileName, char* Buffer, int szBuffer)
+{
+char TmpFile[2048];
+
+HANDLE hFile = CreateFile(
+   FileName,
+   GENERIC_WRITE,
+   0,
+   (LPSECURITY_ATTRIBUTES)NULL,
+   OPEN_ALWAYS,
+   FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,
+   NULL
+);
+if (INVALID_HANDLE_VALUE != hFile) {
+   DWORD dwBytes;
+   SetFilePointer(hFile, 0, NULL, FILE_END);
+
+   SYSTEMTIME DateTime;      // Heure et date courante
+   GetLocalTime(&DateTime);
+   snprintf(TmpFile, _countof(TmpFile), "%02d/%02d/%4d %02d:%02d:%02d - ",
+      DateTime.wDay,
+      DateTime.wMonth,
+      DateTime.wYear,
+      DateTime.wHour,
+      DateTime.wMinute,
+      DateTime.wSecond);
+
+   WriteFile(hFile, TmpFile, strlen(TmpFile), &dwBytes, NULL);
+   WriteFile(hFile, Buffer, szBuffer, &dwBytes, NULL);
+   WriteFile(hFile, "\r\n", 2, &dwBytes, NULL);
+   CloseHandle(hFile);
+   return TRUE;
+   }
+else
+   return FALSE;
+}
+
+
+//////////////////////////////////////////////////////////////////////
+// SaveLog
+//
+void CAsyncPort::SaveLog(bool CheckTime)
+{
+LARGE_INTEGER CurTime;
+QueryPerformanceCounter(&CurTime);
+
+if (m_szOutBuffLen > 0 &&
+   (!CheckTime ||
+   ((((float)(CurTime.QuadPart - m_OutSaveTime.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
+               > LOG_SILENT_TIME)))
+   {
+   if (WriteLogOut() == TRUE)
+      m_szOutBuffLen = 0;
+   }
+if (m_szInBuffLen > 0 &&
+   (!CheckTime ||
+   ((((float)(CurTime.QuadPart - m_InSaveTime.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
+                  > LOG_SILENT_TIME)))
+   {
+   if (WriteLogIn() == TRUE)
+      m_szInBuffLen = 0;
+   }
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -718,24 +833,16 @@ int CAsyncPort::WriteCommBlock(BYTE * pBlock, DWORD dwBytesToWrite)
 	} else {
         dwBytesSent = dwBytesWritten;
     }
-
-	if (*m_szOutLogPath) {
-		HANDLE hFile = CreateFile (
-			m_szOutLogPath,
-			GENERIC_WRITE,
-			0,
-			(LPSECURITY_ATTRIBUTES) NULL,
-			OPEN_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL | FILE_FLAG_RANDOM_ACCESS,
-			NULL
-		);
-		if (INVALID_HANDLE_VALUE != hFile) {
-			DWORD dwBytes;
-			SetFilePointer(hFile, 0, NULL, FILE_END);
-			WriteFile(hFile, pBlock, dwBytesSent, & dwBytes, NULL);
-			CloseHandle(hFile);
-		}
-	}
+   if (*m_szLogDir)
+      {
+      QueryPerformanceCounter(&m_OutSaveTime);
+      // copie buffer
+      if (m_szOutBuffLen + dwBytesSent < _countof(m_szBufferIn))
+         {
+         memcpy(&m_szBufferOut[m_szOutBuffLen], pBlock, dwBytesSent);
+         m_szOutBuffLen += dwBytesSent;
+         }
+      }
 
 	return (dwBytesSent);
 }
@@ -885,8 +992,7 @@ const char * CAsyncPort::GetCommDevName()
 //
 int CAsyncPort::Debug(const char * pszDirName)
 {
-	wsprintf(m_szInLogPath, "%s/ASYNCPORT_LOG_%s.IN", pszDirName, & m_szCommDevName[4]);
-	wsprintf(m_szOutLogPath, "%s/ASYNCPORT_LOG_%s.OUT", pszDirName, & m_szCommDevName[4]);
+   strncpy(m_szLogDir, pszDirName, _countof(m_szLogDir));
 	return 0;
 }
 

@@ -1,12 +1,11 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by tcpcom32.rc
 //
 #define IDD_DIALOG_TCPCOM32             102
 #define IDP_SOCKETS_INIT_FAILED         103
 #define IDI_ICON_PORT                   129
 #define IDI_ICON_PORT_ERROR             130
-#define IDD_DIALOG_SETTINGS             148
 #define IDR_MENU_TCPCOM32               160
 #define IDD_DIALOG_ABOUT                163
 #define IDB_BITMAP_CONN_ERROR           179
@@ -31,46 +30,10 @@
 #define IDB_BITMAP_CONN_WARNING         200
 #define IDB_BITMAP_PORT_ERROR           201
 #define IDC_TREEVIEW                    1000
-#define IDC_CHECK_SERVER_MODE           1010
-#define IDC_CHECK_CLIENT_MODE           1011
-#define IDC_CHECK_PROXY                 1012
-#define IDC_CHECK_LOG                   1013
-#define IDC_CHECK_AUTH                  1014
 #define IDC_EDIT_STATUSLINE             1020
-#define IDC_EDIT_LOCAL_PORT             1021
-#define IDC_EDIT_LOCAL_IP               1022
-#define IDC_EDIT_LOG_DIR                1023
-#define IDC_EDIT_REMOTE_PORT            1024
-#define IDC_EDIT_REMOTE_IP              1025
 #define IDC_EDIT_LGPL                   1026
 #define IDC_EDIT_REQUEST                1027
 #define IDC_EDIT_RESPONSE               1028
-#define IDC_EDIT_PROXY_IP               1028
-#define IDC_EDIT_PROXY_PORT             1030
-#define IDC_EDIT_USERNAME               1031
-#define IDC_EDIT_PASSWORD               1032
-#define IDC_EDIT_WORKGROUP              1033
-#define IDC_EDIT_WORKSTATION            1034
-#define IDC_RADIO_BASIC                 1050
-#define IDC_RADIO_NTLM                  1051
-#define IDC_RADIO_NTLMV2                1052
-#define IDC_STATIC_LOCAL_GROUP          1100
-#define IDC_STATIC_PROXY_GROUP          1101
-#define IDC_STATIC_REMOTE_GROUP         1102
-#define IDC_STATIC_PROXY_IP             1103
-#define IDC_STATIC_PROXY_PORT           1104
-#define IDC_STATIC_USERNAME             1105
-#define IDC_STATIC_PASSWORD             1106
-#define IDC_STATIC_LOCAL_IP             1107
-#define IDC_STATIC_LOCAL_PORT           1108
-#define IDC_STATIC_REMOTE_IP            1109
-#define IDC_STATIC_REMOTE_PORT          1110
-#define IDC_STATIC_LOGDIR               1111
-#define IDC_STATIC_CLIENT_GROUP         1112
-#define IDC_STATIC_SERVER_GROUP         1113
-#define IDC_STATIC_WORKGROUP            1114
-#define IDC_STATIC_WORKSTATION          1115
-#define IDC_STATIC_AUTH_GROUP           1116
 #define ID_SYSTEM_EXIT                  32773
 #define ID_SYSTEM_SETTINGS              32779
 #define ID_PORT_ENABLE                  32795

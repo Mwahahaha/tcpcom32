@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -16,10 +16,8 @@
 // Italian (Italy) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ITA)
-#ifdef _WIN32
 LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_ITALIAN, SUBLANG_ITALIAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -65,114 +63,40 @@ END
 //
 
 IDD_DIALOG_TCPCOM32 DIALOGEX 0, 0, 143, 141
-STYLE WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CAPTION | 
-    WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "TCPCOM32"
 MENU IDR_MENU_TCPCOM32
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "TreeView",IDC_TREEVIEW,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_DISABLEDRAGDROP | WS_BORDER | 
-                    WS_TABSTOP,0,0,143,127
-    EDITTEXT        IDC_EDIT_STATUSLINE,0,127,143,14,ES_AUTOHSCROLL | 
-                    ES_READONLY
-END
-
-IDD_DIALOG_SETTINGS DIALOG DISCARDABLE  0, 0, 186, 358
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "System Settings"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "Save",IDOK,130,338,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,75,338,50,14
-    EDITTEXT        IDC_EDIT_LOCAL_PORT,125,44,45,14,ES_AUTOHSCROLL | 
-                    ES_NUMBER | WS_GROUP
-    LTEXT           "TCP Port",IDC_STATIC_LOCAL_PORT,125,34,30,8
-    EDITTEXT        IDC_EDIT_LOCAL_IP,15,44,104,14,ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "IP Address / Host Name",IDC_STATIC_LOCAL_IP,15,34,78,8
-    GROUPBOX        "Local Address",IDC_STATIC_LOCAL_GROUP,10,21,166,43,
-                    WS_GROUP
-    GROUPBOX        "",IDC_STATIC,5,285,175,44,WS_GROUP
-    EDITTEXT        IDC_EDIT_LOG_DIR,11,309,163,14,ES_AUTOHSCROLL
-    LTEXT           "Log Directory",IDC_STATIC_LOGDIR,11,299,43,8
-    CONTROL         "Enable Log",IDC_CHECK_LOG,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,10,284,51,10
-    GROUPBOX        "",IDC_STATIC_PROXY_GROUP,9,137,167,137,WS_GROUP
-    EDITTEXT        IDC_EDIT_PROXY_IP,15,161,104,14,ES_AUTOHSCROLL | 
-                    WS_GROUP
-    EDITTEXT        IDC_EDIT_PROXY_PORT,125,161,45,14,ES_AUTOHSCROLL | 
-                    WS_GROUP
-    LTEXT           "TCP Port",IDC_STATIC_PROXY_PORT,125,151,30,8
-    LTEXT           "IP Address",IDC_STATIC_PROXY_IP,15,151,35,8
-    CONTROL         "Use Proxy Server",IDC_CHECK_PROXY,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,15,136,70,10
-    EDITTEXT        IDC_EDIT_USERNAME,19,220,70,14,ES_AUTOHSCROLL | WS_GROUP
-    EDITTEXT        IDC_EDIT_PASSWORD,96,220,70,14,ES_PASSWORD | 
-                    ES_AUTOHSCROLL | WS_GROUP
-    LTEXT           "User Name",IDC_STATIC_USERNAME,19,210,36,8
-    LTEXT           "Password",IDC_STATIC_PASSWORD,96,210,32,8
-    GROUPBOX        "",IDC_STATIC_CLIENT_GROUP,5,75,175,203
-    CONTROL         "Enable Client Mode",IDC_CHECK_CLIENT_MODE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,74,76,10
-    EDITTEXT        IDC_EDIT_REMOTE_PORT,125,111,45,14,ES_AUTOHSCROLL | 
-                    ES_NUMBER | WS_GROUP
-    LTEXT           "TCP Port",IDC_STATIC_REMOTE_PORT,125,101,30,8
-    EDITTEXT        IDC_EDIT_REMOTE_IP,15,111,104,14,ES_AUTOHSCROLL | 
-                    WS_GROUP
-    LTEXT           "IP Address / Host Name",IDC_STATIC_REMOTE_IP,15,101,78,
-                    8
-    GROUPBOX        "Remote Address",IDC_STATIC_REMOTE_GROUP,10,88,166,43,
-                    WS_GROUP
-    GROUPBOX        "",IDC_STATIC_SERVER_GROUP,5,7,175,61
-    CONTROL         "Enable Server Mode",IDC_CHECK_SERVER_MODE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,11,6,80,10
-    EDITTEXT        IDC_EDIT_WORKGROUP,19,249,70,14,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_WORKSTATION,96,249,70,14,ES_AUTOHSCROLL
-    LTEXT           "Domain / Workgroup",IDC_STATIC_WORKGROUP,19,239,68,8
-    LTEXT           "Computer Name",IDC_STATIC_WORKSTATION,96,239,52,8
-    GROUPBOX        "",IDC_STATIC_AUTH_GROUP,13,182,159,88,WS_GROUP
-    CONTROL         "Basic",IDC_RADIO_BASIC,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,19,197,33,10
-    CONTROL         "NTLM",IDC_RADIO_NTLM,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,70,197,36,10
-    CONTROL         "NTLMv2",IDC_RADIO_NTLMV2,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP,120,197,44,10
-    CONTROL         "Authentication",IDC_CHECK_AUTH,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,18,182,60,8
+    CONTROL         "TreeView",IDC_TREEVIEW,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_DISABLEDRAGDROP | WS_BORDER | WS_TABSTOP,0,0,143,127
+    EDITTEXT        IDC_EDIT_STATUSLINE,0,127,143,14,ES_AUTOHSCROLL | ES_READONLY
 END
 
 IDD_DIALOG_ABOUT DIALOGEX 0, 0, 302, 129
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,125,108,50,14
-    CONTROL         194,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,7,33,61
-    EDITTEXT        IDC_EDIT_LGPL,44,7,251,95,ES_MULTILINE | ES_READONLY | 
-                    ES_WANTRETURN | NOT WS_BORDER | WS_VSCROLL | NOT 
-                    WS_TABSTOP,WS_EX_STATICEDGE
-    CONTROL         195,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,71,33,30
+    CONTROL         IDB_BITMAP_MEP,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,7,33,61
+    EDITTEXT        IDC_EDIT_LGPL,44,7,251,95,ES_MULTILINE | ES_READONLY | ES_WANTRETURN | NOT WS_BORDER | WS_VSCROLL | NOT WS_TABSTOP,WS_EX_STATICEDGE
+    CONTROL         IDB_BITMAP_GNU,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,71,33,30
 END
 
-IDD_DIALOG_TCPIP DIALOG DISCARDABLE  0, 0, 237, 198
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DIALOG_TCPIP DIALOG 0, 0, 237, 198
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dialog"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,93,177,50,14
-    EDITTEXT        IDC_EDIT_REQUEST,7,16,223,70,ES_MULTILINE | 
-                    ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | 
-                    WS_VSCROLL | NOT WS_TABSTOP
-    EDITTEXT        IDC_EDIT_RESPONSE,7,102,223,68,ES_MULTILINE | 
-                    ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | 
-                    WS_VSCROLL | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_REQUEST,7,16,223,70,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL | NOT WS_TABSTOP
+    EDITTEXT        IDC_EDIT_RESPONSE,7,102,223,68,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY | ES_WANTRETURN | WS_VSCROLL | NOT WS_TABSTOP
     LTEXT           "HTTP Request",IDC_STATIC,7,7,49,8
     LTEXT           "HTTP Response",IDC_STATIC,7,92,54,8
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -195,33 +119,27 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "Convertitore porte seriali in connessioni TCP/IP\0"
-            VALUE "CompanyName", "mepping.com\0"
-            VALUE "FileDescription", "tcpcom32\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "tcpcom32\0"
-            VALUE "LegalCopyright", "Copyright © 2008\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "tcpcom32.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "tcpcom32\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "Convertitore porte seriali in connessioni TCP/IP"
+            VALUE "CompanyName", "mepping.com"
+            VALUE "FileDescription", "tcpcom32"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "tcpcom32"
+            VALUE "LegalCopyright", "Copyright © 2008"
+            VALUE "OriginalFilename", "tcpcom32.exe"
+            VALUE "ProductName", "tcpcom32"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
         BLOCK "080004b0"
         BEGIN
-            VALUE "Comments", "Serial port to TCP/IP connection mapper\0"
-            VALUE "CompanyName", "mepping.com\0"
-            VALUE "FileDescription", "tcpcom32\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "tcpcom32\0"
-            VALUE "LegalCopyright", "Copyright (C) 2008\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "tcpcom32.EXE\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "tcpcom32\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "Comments", "Serial port to TCP/IP connection mapper"
+            VALUE "CompanyName", "mepping.com"
+            VALUE "FileDescription", "tcpcom32"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "tcpcom32"
+            VALUE "LegalCopyright", "Copyright (C) 2008"
+            VALUE "OriginalFilename", "tcpcom32.EXE"
+            VALUE "ProductName", "tcpcom32"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -230,33 +148,19 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MENU_TCPCOM32 MENU DISCARDABLE 
+IDR_MENU_TCPCOM32 MENU
 BEGIN
     POPUP "System"
     BEGIN
         MENUITEM "Restart",                     ID_SYSTEM_RESTART
         MENUITEM SEPARATOR
-        MENUITEM "Settings...",                 ID_SYSTEM_SETTINGS
-        MENUITEM SEPARATOR
         MENUITEM "Exit",                        ID_SYSTEM_EXIT
-    END
-    POPUP "Port"
-    BEGIN
-        MENUITEM "Close",                       ID_PORT_CLOSE
-        MENUITEM SEPARATOR
-        MENUITEM "Enable",                      ID_PORT_ENABLE
-        MENUITEM "Disable",                     ID_PORT_DISABLE
-        MENUITEM SEPARATOR
-        MENUITEM "Settings...",                 ID_PORT_SETTINGS
-        MENUITEM "Connection...",               ID_PORT_CONNECTION
     END
     POPUP "Help"
     BEGIN
@@ -272,8 +176,10 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_PORT           ICON    DISCARDABLE     "res\\port.ico"
-IDI_ICON_PORT_ERROR     ICON    DISCARDABLE     "res\\port_err.ico"
+IDI_ICON_PORT           ICON                    "res\\port.ico"
+
+IDI_ICON_PORT_ERROR     ICON                    "res\\port_err.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -281,8 +187,12 @@ IDI_ICON_PORT_ERROR     ICON    DISCARDABLE     "res\\port_err.ico"
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
+    IDD_DIALOG_TCPCOM32, DIALOG
+    BEGIN
+    END
+
     IDD_DIALOG_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -307,33 +217,53 @@ END
 // Bitmap
 //
 
-IDB_BITMAP_CONN_ERROR   BITMAP  DISCARDABLE     "res\\conn_error.bmp"
-IDB_BITMAP_CONN_OPEN    BITMAP  DISCARDABLE     "res\\conn_open.bmp"
-IDB_BITMAP_CONN_OPEN_BOTH BITMAP  DISCARDABLE     "res\\conn_open_both.bmp"
-IDB_BITMAP_CONN_OPEN_LOCAL BITMAP  DISCARDABLE     "res\\conn_open_local.bmp"
-IDB_BITMAP_CONN_OPEN_REMOTE BITMAP  DISCARDABLE     "res\\conn_open_remote.bmp"
-IDB_BITMAP_DELETE       BITMAP  DISCARDABLE     "res\\delete.bmp"
-IDB_BITMAP_NETWORK      BITMAP  DISCARDABLE     "res\\network.bmp"
-IDB_BITMAP_PORT         BITMAP  DISCARDABLE     "res\\port.bmp"
-IDB_BITMAP_STATS        BITMAP  DISCARDABLE     "res\\stats.bmp"
-IDB_BITMAP_NETCONN      BITMAP  DISCARDABLE     "res\\netconn.bmp"
-IDB_BITMAP_CONN_FORBIDDEN BITMAP  DISCARDABLE     "res\\conn_forbidden.bmp"
-IDB_BITMAP_WORLD_MONITOR BITMAP  DISCARDABLE     "res\\world_monitor.bmp"
-IDB_BITMAP_MONITOR      BITMAP  DISCARDABLE     "res\\monitor.bmp"
-IDB_BITMAP_MEP          BITMAP  DISCARDABLE     "res\\mep.bmp"
-IDB_BITMAP_GNU          BITMAP  DISCARDABLE     "res\\gnu.bmp"
-IDB_BITMAP_CONN_OPENING3 BITMAP  DISCARDABLE     "res\\conn_opening3.bmp"
-IDB_BITMAP_CONN_OPENING1 BITMAP  DISCARDABLE     "res\\conn_opening1.bmp"
-IDB_BITMAP_CONN_OPENING2 BITMAP  DISCARDABLE     "res\\conn_opening2.bmp"
-IDB_BITMAP_CONN_WARNING BITMAP  DISCARDABLE     "res\\conn_warning.bmp"
-IDB_BITMAP_PORT_ERROR   BITMAP  DISCARDABLE     "res\\port_error.bmp"
+IDB_BITMAP_CONN_ERROR   BITMAP                  "res\\conn_error.bmp"
+
+IDB_BITMAP_CONN_OPEN    BITMAP                  "res\\conn_open.bmp"
+
+IDB_BITMAP_CONN_OPEN_BOTH BITMAP                  "res\\conn_open_both.bmp"
+
+IDB_BITMAP_CONN_OPEN_LOCAL BITMAP                  "res\\conn_open_local.bmp"
+
+IDB_BITMAP_CONN_OPEN_REMOTE BITMAP                  "res\\conn_open_remote.bmp"
+
+IDB_BITMAP_DELETE       BITMAP                  "res\\delete.bmp"
+
+IDB_BITMAP_NETWORK      BITMAP                  "res\\network.bmp"
+
+IDB_BITMAP_PORT         BITMAP                  "res\\port.bmp"
+
+IDB_BITMAP_STATS        BITMAP                  "res\\stats.bmp"
+
+IDB_BITMAP_NETCONN      BITMAP                  "res\\netconn.bmp"
+
+IDB_BITMAP_CONN_FORBIDDEN BITMAP                  "res\\conn_forbidden.bmp"
+
+IDB_BITMAP_WORLD_MONITOR BITMAP                  "res\\world_monitor.bmp"
+
+IDB_BITMAP_MONITOR      BITMAP                  "res\\monitor.bmp"
+
+IDB_BITMAP_MEP          BITMAP                  "res\\mep.bmp"
+
+IDB_BITMAP_GNU          BITMAP                  "res\\gnu.bmp"
+
+IDB_BITMAP_CONN_OPENING3 BITMAP                  "res\\conn_opening3.bmp"
+
+IDB_BITMAP_CONN_OPENING1 BITMAP                  "res\\conn_opening1.bmp"
+
+IDB_BITMAP_CONN_OPENING2 BITMAP                  "res\\conn_opening2.bmp"
+
+IDB_BITMAP_CONN_WARNING BITMAP                  "res\\conn_warning.bmp"
+
+IDB_BITMAP_PORT_ERROR   BITMAP                  "res\\port_error.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDP_SOCKETS_INIT_FAILED "Inizializzazione dei connettori di Windows non riuscita."
 END

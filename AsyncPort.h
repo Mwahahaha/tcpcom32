@@ -18,6 +18,9 @@
 #ifndef ASYNCPORT_H_INCLUDED
 #define ASYNCPORT_H_INCLUDED
 
+
+
+#define LOG_SILENT_TIME 50 // Temps avant quavegarde des logs en ms
 class CAsyncPort
 {
 protected:
@@ -32,8 +35,15 @@ protected:
 protected:
 
 	char m_szCommDevName[MAX_PATH];
-	char m_szInLogPath[MAX_PATH];
-	char m_szOutLogPath[MAX_PATH];
+   char m_szLogDir[MAX_PATH];
+   char m_szBufferIn[5* IN_QUEUE_SIZE];
+   char m_szBufferOut[5* IN_QUEUE_SIZE];
+   int m_szInBuffLen;
+   int m_szOutBuffLen;
+   LARGE_INTEGER m_InSaveTime; 
+   LARGE_INTEGER m_Freq; 
+   LARGE_INTEGER m_OutSaveTime;
+
 	HANDLE m_hCommDev;
 	COMMCONFIG m_commConfig;
 	COMMPROP m_commProp;
@@ -54,11 +64,15 @@ protected:
 	int WriteCommBlock(BYTE * pByte, DWORD dwBytesToWrite);
 	int WatchCommDev();
 	friend DWORD WINAPI CommWatchProc(LPVOID lpParam);
+   BOOL WriteLogIn();
+   BOOL WriteLogOut();
+   BOOL WriteLog(const char* FileName, char* Buffer, int szBuffer);
 
 public:
 
 	CAsyncPort();
 	virtual ~CAsyncPort();
+   void SaveLog(bool CheckTime);
 
 	static int IsInstalled(const char * pszCommDevName);
 
@@ -79,7 +93,6 @@ public:
 	BOOL GetCommState(DCB *lpDcb);
 	static LPSTR FormatDcb(DCB *lpDcb, LPSTR lpszString, int nStringSize);
 	int Debug(const char * pszLogDir);
-
 };
 
 #endif // ASYNCPORT_H_INCLUDED

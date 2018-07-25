@@ -24,7 +24,6 @@ CPortContext::CPortContext()
 	lpDcb = NULL;
 	lpPort = NULL;
 
-	lpSocket = NULL;
 	lpszRequest = NULL;
 	lpszResponse = NULL;
 
@@ -61,10 +60,6 @@ void CPortContext::Cleanup()
 	if (lpPort) {
 		delete lpPort;
 		lpPort = NULL;
-	}
-	if (lpSocket) {
-		delete lpSocket;
-		lpSocket = NULL;
 	}
 	if (lpszRequest) {
 		delete lpszRequest;

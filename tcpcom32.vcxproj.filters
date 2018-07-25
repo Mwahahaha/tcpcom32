@@ -149,4 +149,28 @@
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\port.ico" />
+    <Image Include="res\port_err.ico" />
+    <Image Include="res\conn_error.bmp" />
+    <Image Include="res\conn_open.bmp" />
+    <Image Include="res\conn_open_both.bmp" />
+    <Image Include="res\conn_open_local.bmp" />
+    <Image Include="res\conn_open_remote.bmp" />
+    <Image Include="res\delete.bmp" />
+    <Image Include="res\network.bmp" />
+    <Image Include="res\port.bmp" />
+    <Image Include="res\stats.bmp" />
+    <Image Include="res\netconn.bmp" />
+    <Image Include="res\conn_forbidden.bmp" />
+    <Image Include="res\world_monitor.bmp" />
+    <Image Include="res\monitor.bmp" />
+    <Image Include="res\mep.bmp" />
+    <Image Include="res\gnu.bmp" />
+    <Image Include="res\conn_opening3.bmp" />
+    <Image Include="res\conn_opening1.bmp" />
+    <Image Include="res\conn_opening2.bmp" />
+    <Image Include="res\conn_warning.bmp" />
+    <Image Include="res\port_error.bmp" />
+  </ItemGroup>
 </Project>

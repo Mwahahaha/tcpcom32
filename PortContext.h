@@ -30,7 +30,6 @@ public:
 	CAsyncPort *lpPort;
 
 	// TCP Connection
-	CClientSocket* lpSocket;
 	LPSTR lpszRequest;
 	LPSTR lpszResponse;
 

@@ -39,6 +39,10 @@
 #define MENU_PORT 1
 #define MENU_HELP 2
 
+#define MX_COM_PORT 256
+
+#include "PortContext.h"
+
 /////////////////////////////////////////////////////////////////////////////
 // CTcpcom32Dlg dialog
 
@@ -67,9 +71,10 @@ private:
 	BOOL m_isInitialized;
 	DWORD m_dwCmdShow;
 
-	HANDLE m_hMainEvent;
-	HANDLE m_hMainThread;
-	DWORD m_dwMainThreadId;
+	HANDLE m_hEvent[MX_COM_PORT];
+	HANDLE m_hThread[MX_COM_PORT];
+	DWORD m_dwThreadId[MX_COM_PORT];
+   CPortContext* m_ctx[MX_COM_PORT];
 
 private:
 	void UpdateMenu(LPSTR lpszPortName, struct CPortContext *lpContext);
@@ -78,7 +83,6 @@ private:
 	friend DWORD WINAPI InitializeThreadProc(LPVOID lpParam);
 	friend DWORD WINAPI StopThreadProc(LPVOID lpParam);
 	friend DWORD WINAPI AcceptThreadProc(LPVOID lpParam);
-	friend DWORD WINAPI ClientThreadProc(LPVOID lpParam);
 	friend DWORD WINAPI PortThreadProc(LPVOID lpParam);
 
 // Implementation
@@ -98,12 +102,6 @@ protected:
 	afx_msg LRESULT OnTrayNotification(WPARAM wParam, LPARAM lParam);
 	afx_msg LRESULT OnSysCommand(WPARAM wParam, LPARAM lParam);
 	afx_msg void OnSystemRestart();
-	afx_msg void OnSystemSettings();
-	afx_msg void OnPortClose();
-	afx_msg void OnPortSettings();
-	afx_msg void OnPortConnection();
-	afx_msg void OnPortEnable();
-	afx_msg void OnPortDisable();
 	afx_msg void OnRclickTreeview(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnDblclkTreeview(NMHDR* pNMHDR, LRESULT* pResult);
 	afx_msg void OnSelchangedTreeview(NMHDR* pNMHDR, LRESULT* pResult);
