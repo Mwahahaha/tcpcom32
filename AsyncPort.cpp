@@ -50,8 +50,10 @@ CAsyncPort::CAsyncPort()
 	wsprintf(m_szMutexName, "CAsyncPort%08x", GetCurrentThreadId());
 
    QueryPerformanceFrequency(&m_Freq);
-   QueryPerformanceCounter(&m_InSaveTime);
-   QueryPerformanceCounter(&m_OutSaveTime);
+   QueryPerformanceCounter(&m_TimeLastIn);
+   QueryPerformanceCounter(&m_TimeLastOut);
+   QueryPerformanceCounter(&m_TimeFirstIn);
+   QueryPerformanceCounter(&m_TimeFirstOut);
 
 	// create I/O event used for overlapped reads / writes
 
@@ -556,8 +558,12 @@ int CAsyncPort::WatchCommDev()
 
 					if (*m_szLogDir) 
                   {
-
-                  QueryPerformanceCounter(&m_InSaveTime);
+                  QueryPerformanceCounter(&m_TimeLastIn);
+                  if (m_szInBuffLen == 0)
+                     {
+                     GetLocalTime(&m_DateIn);
+                     QueryPerformanceCounter(&m_TimeFirstIn);
+                     }
 
                   // copie buffer
                   if (m_szInBuffLen + nLength < _countof(m_szBufferIn))
@@ -603,53 +609,24 @@ int CAsyncPort::WatchCommDev()
 }
 
 //////////////////////////////////////////////////////////////////////
-// WriteLogIn
-// return:   TRUE   success
-//           FALSE  error
-//
-BOOL CAsyncPort::WriteLogIn()
-{
-char FileName[MAX_PATH];
-SYSTEMTIME DateTime;      // Heure et date courante
-
-GetLocalTime(&DateTime);
-wsprintf(FileName, "%s/%4d%02d%02d_%s_OUT.log", 
-                   m_szLogDir,
-                   DateTime.wYear,
-                   DateTime.wMonth,
-                   DateTime.wDay,
-                   &m_szCommDevName[4]);
-return WriteLog(FileName, m_szBufferIn, m_szInBuffLen);
-}
-
-//////////////////////////////////////////////////////////////////////
-// WriteLogOut
-// return:   TRUE   success
-//           FALSE  error
-//
-BOOL CAsyncPort::WriteLogOut()
-{
-char FileName[MAX_PATH];
-SYSTEMTIME DateTime;      // Heure et date courante
-
-GetLocalTime(&DateTime);
-wsprintf(FileName, "%s/%4d%02d%02d_%s_IN.log",
-   m_szLogDir,
-   DateTime.wYear,
-   DateTime.wMonth,
-   DateTime.wDay,
-   &m_szCommDevName[4]);
-return WriteLog(FileName, m_szBufferOut, m_szOutBuffLen);
-}
-
-//////////////////////////////////////////////////////////////////////
 // WriteLog
 // return:   TRUE   success
 //           FALSE  error
 //
-BOOL CAsyncPort::WriteLog(const char* FileName, char* Buffer, int szBuffer)
+BOOL CAsyncPort::WriteLog(const char* FileHeader, char* Buffer, int szBuffer, SYSTEMTIME* ComDate, float ComTime)
 {
 char TmpFile[2048];
+char FileName[MAX_PATH];
+SYSTEMTIME DateTime;      // Heure et date courante
+
+GetLocalTime(&DateTime);
+wsprintf(FileName, "%s/%4d%02d%02d_%s_%s.log",
+   m_szLogDir,
+   DateTime.wYear,
+   DateTime.wMonth,
+   DateTime.wDay,
+   &m_szCommDevName[4],
+   FileHeader);
 
 HANDLE hFile = CreateFile(
    FileName,
@@ -664,15 +641,15 @@ if (INVALID_HANDLE_VALUE != hFile) {
    DWORD dwBytes;
    SetFilePointer(hFile, 0, NULL, FILE_END);
 
-   SYSTEMTIME DateTime;      // Heure et date courante
-   GetLocalTime(&DateTime);
-   snprintf(TmpFile, _countof(TmpFile), "%02d/%02d/%4d %02d:%02d:%02d - ",
-      DateTime.wDay,
-      DateTime.wMonth,
-      DateTime.wYear,
-      DateTime.wHour,
-      DateTime.wMinute,
-      DateTime.wSecond);
+   snprintf(TmpFile, _countof(TmpFile), "%02d:%02d:%02d.%03d (%.0f ms) ",
+      ComDate->wHour,
+      ComDate->wMinute,
+      ComDate->wSecond,
+      ComDate->wMilliseconds,
+      ComTime);
+   while (strlen(TmpFile) < 24)
+      strcat(TmpFile, " ");
+   strcat(TmpFile, " - ");
 
    WriteFile(hFile, TmpFile, strlen(TmpFile), &dwBytes, NULL);
    WriteFile(hFile, Buffer, szBuffer, &dwBytes, NULL);
@@ -693,20 +670,23 @@ void CAsyncPort::SaveLog(bool CheckTime)
 LARGE_INTEGER CurTime;
 QueryPerformanceCounter(&CurTime);
 
+float InTime = ((float)(CurTime.QuadPart - m_TimeFirstIn.QuadPart)) * 1000 / (float)m_Freq.QuadPart;
+float OutTime = ((float)(CurTime.QuadPart - m_TimeFirstOut.QuadPart)) * 1000 / (float)m_Freq.QuadPart;
+
 if (m_szOutBuffLen > 0 &&
    (!CheckTime ||
-   ((((float)(CurTime.QuadPart - m_OutSaveTime.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
+   ((((float)(CurTime.QuadPart - m_TimeLastOut.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
                > LOG_SILENT_TIME)))
    {
-   if (WriteLogOut() == TRUE)
+   if (WriteLog("OUT", m_szBufferOut, m_szOutBuffLen, &m_DateOut, OutTime) == TRUE)
       m_szOutBuffLen = 0;
    }
 if (m_szInBuffLen > 0 &&
    (!CheckTime ||
-   ((((float)(CurTime.QuadPart - m_InSaveTime.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
+   ((((float)(CurTime.QuadPart - m_TimeLastIn.QuadPart)) * 1000 / (float)m_Freq.QuadPart)
                   > LOG_SILENT_TIME)))
    {
-   if (WriteLogIn() == TRUE)
+   if (WriteLog("IN", m_szBufferIn, m_szInBuffLen, &m_DateIn, InTime) == TRUE)
       m_szInBuffLen = 0;
    }
 }
@@ -835,7 +815,12 @@ int CAsyncPort::WriteCommBlock(BYTE * pBlock, DWORD dwBytesToWrite)
     }
    if (*m_szLogDir)
       {
-      QueryPerformanceCounter(&m_OutSaveTime);
+      QueryPerformanceCounter(&m_TimeLastOut);
+      if (m_szOutBuffLen == 0)
+         {
+         QueryPerformanceCounter(&m_TimeFirstOut);
+         GetLocalTime(&m_DateOut);
+         }
       // copie buffer
       if (m_szOutBuffLen + dwBytesSent < _countof(m_szBufferIn))
          {

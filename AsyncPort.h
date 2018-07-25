@@ -40,9 +40,13 @@ protected:
    char m_szBufferOut[5* IN_QUEUE_SIZE];
    int m_szInBuffLen;
    int m_szOutBuffLen;
-   LARGE_INTEGER m_InSaveTime; 
-   LARGE_INTEGER m_Freq; 
-   LARGE_INTEGER m_OutSaveTime;
+   LARGE_INTEGER m_TimeLastIn;
+   LARGE_INTEGER m_TimeFirstIn;
+   LARGE_INTEGER m_TimeLastOut;
+   LARGE_INTEGER m_TimeFirstOut;
+   LARGE_INTEGER m_Freq;
+   SYSTEMTIME m_DateIn;
+   SYSTEMTIME m_DateOut;
 
 	HANDLE m_hCommDev;
 	COMMCONFIG m_commConfig;
@@ -64,9 +68,9 @@ protected:
 	int WriteCommBlock(BYTE * pByte, DWORD dwBytesToWrite);
 	int WatchCommDev();
 	friend DWORD WINAPI CommWatchProc(LPVOID lpParam);
-   BOOL WriteLogIn();
-   BOOL WriteLogOut();
-   BOOL WriteLog(const char* FileName, char* Buffer, int szBuffer);
+   BOOL WriteLogIn(int ComTime);
+   BOOL WriteLogOut(int ComTime);
+   BOOL WriteLog(const char* FileHeader, char* Buffer, int szBuffer, SYSTEMTIME* ComDate, float ComTime);
 
 public:
 
